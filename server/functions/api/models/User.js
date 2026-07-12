@@ -14,8 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   userId: {
     type: Number,
-    unique: true,
-    required: true,
+    unique: true, // REMOVIDO: required: true para permitir que o pre-save funcione
   },
   username: {
     type: String,
@@ -185,14 +184,18 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function (next) {
   if (this.isNew) {
-    const counter = await mongoose
-      .model('Counter')
-      .findOneAndUpdate(
-        { _id: 'userId' },
-        { $inc: { seq: 1 } },
-        { new: true, upsert: true }
-      );
-    this.userId = counter.seq;
+    try {
+      const counter = await mongoose
+        .model('Counter')
+        .findOneAndUpdate(
+          { _id: 'userId' },
+          { $inc: { seq: 1 } },
+          { new: true, upsert: true }
+        );
+      this.userId = counter.seq;
+    } catch (error) {
+      return next(error);
+    }
   }
   next();
 });
