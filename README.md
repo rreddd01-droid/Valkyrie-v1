@@ -88,3 +88,4 @@ We use MongoDB Atlas for the DB. Don't know how reliable it is, but it's what we
 
 ## note to self
 mrbobbilly keep updating this readme as we add more stuff so we can have documentation for the future
+.
