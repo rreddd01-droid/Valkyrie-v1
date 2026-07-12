@@ -14,6 +14,9 @@ async function generateTestUsers(numUsers = 10) {
 
     console.log('Connected to MongoDB');
 
+    // Carrega o modelo de contador que o projeto usa
+    const Counter = mongoose.model('Counter');
+
     const baseUsername = 'testuser';
     const baseEmail = 'testuser';
     const password = 'testpassword123';
@@ -23,7 +26,17 @@ async function generateTestUsers(numUsers = 10) {
       const email = `${baseEmail}${i + 1}@example.com`;
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Incrementa o contador no banco de dados para pegar o próximo ID livre
+      const counterDoc = await Counter.findOneAndUpdate(
+        { _id: 'userId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      
+      const proximoId = counterDoc.seq;
+
       const user = new User({
+        userId: proximoId, // <--- Agora o ID correto e obrigatório é injetado aqui
         username,
         email,
         password: hashedPassword,
@@ -32,7 +45,7 @@ async function generateTestUsers(numUsers = 10) {
       });
 
       await user.save();
-      console.log(`Created user: ${username}`);
+      console.log(`Created user: ${username} (ID: ${proximoId})`);
     }
 
     console.log(`${numUsers} test users created successfully`);
