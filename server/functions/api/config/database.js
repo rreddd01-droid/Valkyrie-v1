@@ -11,7 +11,7 @@ const connectDB = async (uri) => {
 
   try {
     // Força o uso da variável da Render. Se não achar, usa o link recebido.
-    const databaseUri = process.env.MONGODB_URI || uri;
+    const databaseUri = 'mongodb+srv://TestPriv:Kaio123456@cluster0.nr4c4jy.mongodb.net/Classicblox?AppName=Cluster0';
 
     const client = await mongoose.connect(databaseUri, {
       useNewUrlParser: true,
