@@ -10,14 +10,20 @@ const connectDB = async (uri) => {
   }
 
   try {
-    const client = await mongoose.connect(uri, {
+    // Força o uso da variável da Render. Se não achar, usa o link recebido.
+    const databaseUri = process.env.MONGODB_URI || uri;
+
+    const client = await mongoose.connect(databaseUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
+    
     cachedDb = client;
-    console.log('MongoDB connected');
+    console.log('====================================');
+    console.log('SUCESSO: CONECTADO AO MONGODB ATLAS!');
+    console.log('====================================');
 
     // require all models
     const modelsPath = path.join(__dirname, '../models');
@@ -29,7 +35,7 @@ const connectDB = async (uri) => {
 
     return client;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('Erro grave ao conectar no MongoDB:', error);
     throw error;
   }
 };
