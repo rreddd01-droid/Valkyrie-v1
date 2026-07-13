@@ -2,14 +2,15 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+// Configurações forçadas diretamente para o seu Android
+const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL;
+const ADMIN_USERNAME = "snoop";
+const ADMIN_EMAIL = "Julianaferreira55577@email.com";
+const ADMIN_PASSWORD = "Kaio123";
 
 async function createAdminUser() {
-  if (!ADMIN_USERNAME || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
-    console.error('Admin credentials not set in environment variables');
+  if (!MONGODB_URI) {
+    console.error('Erro: MONGODB_URI nao foi encontrada no Render!');
     process.exit(1);
   }
 
@@ -23,9 +24,10 @@ async function createAdminUser() {
     require('../functions/api/models/User');
     const User = mongoose.model('User');
 
-    const existingAdmin = await User.findOne({ isAdmin: true });
-    if (existingAdmin) {
-      console.log('An admin user already exists');
+    // Verifica se a sua conta snoop já existe para não duplicar
+    const existingUser = await User.findOne({ username: ADMIN_USERNAME });
+    if (existingUser) {
+      console.log('O usuario snoop ja existe no banco de dados!');
       process.exit(0);
     }
 
